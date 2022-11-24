@@ -41,6 +41,6 @@ const server = createServer((req: IncomingMessage, res: ServerResponse) => {
 });
 
 server.listen(PORT, () => {
-  connectDatabase();
+  // connectDatabase();
   console.log(`Server listening on port ${PORT}`);
 });

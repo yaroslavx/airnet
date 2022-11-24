@@ -1,6 +1,14 @@
 import { findAll, create, findByProfile } from '../models/table';
 
 const { getPostData } = require('../utils/utils');
+const headers = {
+  'Content-Type': 'application/json',
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Request-Method': '*',
+  'Access-Control-Allow-Headers': '*',
+  'Access-Control-Allow-Methods': 'OPTIONS, POST, GET',
+  'Access-Control-Max-Age': 2592000,
+};
 
 // @desc    Gets All Tasks
 // @route   GET /api/tasks
@@ -8,7 +16,7 @@ async function getTasks(req, res) {
   try {
     const tasks = await findAll();
 
-    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.writeHead(200, headers);
     res.end(JSON.stringify(tasks));
   } catch (error) {
     console.log(error);
@@ -22,10 +30,10 @@ async function getProfileTasks(req, res, profile) {
     const tasks = await findByProfile(profile);
 
     if (!tasks) {
-      res.writeHead(404, { 'Content-Type': 'application/json' });
+      res.writeHead(404, headers);
       res.end(JSON.stringify({ message: 'Tasks Not Found' }));
     } else {
-      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.writeHead(200, headers);
       res.end(JSON.stringify(tasks));
     }
   } catch (error) {
@@ -40,10 +48,10 @@ async function getProfileTasks(req, res, profile) {
 //     const product = await Product.findById(id);
 
 //     if (!product) {
-//       res.writeHead(404, { 'Content-Type': 'application/json' });
+//       res.writeHead(404, headers);
 //       res.end(JSON.stringify({ message: 'Product Not Found' }));
 //     } else {
-//       res.writeHead(200, { 'Content-Type': 'application/json' });
+//       res.writeHead(200, headers);
 //       res.end(JSON.stringify(product));
 //     }
 //   } catch (error) {
@@ -58,7 +66,7 @@ async function createTask(req, res) {
     const body = await getPostData(req);
     const { task, profile } = JSON.parse(body as string);
     const createdTask = await create(task, profile);
-    res.writeHead(201, { 'Content-Type': 'application/json' });
+    res.writeHead(201, headers);
     return res.end(JSON.stringify(createdTask));
   } catch (error) {
     console.log(error);
