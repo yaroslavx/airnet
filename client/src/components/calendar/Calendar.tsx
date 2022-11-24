@@ -1,22 +1,28 @@
-import { createContext, FC, useState } from 'react'
+import { createContext, Dispatch, FC, SetStateAction, useState } from 'react'
 import LeftSide from '../leftSide/LeftSide'
 import RightSide from '../rightSide/RightSide'
 import { CustomCalendar } from './Calendar.styles'
 
+type ContextType = {
+    profile: string | null,
+    setProfile: Dispatch<SetStateAction<string>>
+}
 
+const initialState = {
+    profile: 'default_profile',
+    setProfile: () => { }
+}
 
-const initialState = { profile: 'default_profile' }
-
-export const Context = createContext(initialState);
+export const ProfileContext = createContext<ContextType>(initialState);
 
 const Calendar: FC = () => {
-    const [context, setContext] = useState('default_profile');
+    const [profile, setProfile] = useState(initialState.profile);
     return (
         <CustomCalendar>
-            <Context.Provider value={[context, setContext]}>
+            <ProfileContext.Provider value={{ profile, setProfile }} >
                 <LeftSide />
                 <RightSide />
-            </Context.Provider>
+            </ProfileContext.Provider>
         </CustomCalendar>
     )
 }

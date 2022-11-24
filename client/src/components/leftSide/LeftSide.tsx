@@ -3,7 +3,7 @@ import { CustomLeftSide } from './LeftSide.styles'
 import Task from '../day/Day'
 import { IoAddCircle } from 'react-icons/io5'
 import axios from 'axios'
-import { Context } from '../calendar/Calendar'
+import { ProfileContext } from '../calendar/Calendar'
 
 
 
@@ -34,7 +34,7 @@ const LeftSide: FC = () => {
         setProfiles(prev => [...prev, 'new_profile'])
     }
 
-    const [context, setContext] = useContext(Context);
+    const { profile, setProfile } = useContext(ProfileContext);
 
     return (
         <CustomLeftSide width={size.x}>
@@ -48,7 +48,7 @@ const LeftSide: FC = () => {
             </div>
 
             <div className='profiles'>
-                {profiles.map(profile => <div className='profile'>{profile}</div>)}
+                {profiles.map(profile => <div onClick={() => setProfile(profile)} className='profile'>{profile}</div>)}
 
             </div>
         </CustomLeftSide>

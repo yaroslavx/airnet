@@ -1,7 +1,8 @@
-import { FC, RefObject, useEffect, useRef, useState } from 'react'
+import { FC, RefObject, useContext, useEffect, useRef, useState } from 'react'
 import { CustomRightSide } from './RightSide.styles'
 import { IoAddCircleOutline } from 'react-icons/io5'
 import AddTaskModal from '../addTaskModal/AddTaskModal';
+import { ProfileContext } from '../calendar/Calendar';
 
 const RightSide: FC = () => {
     function formatDates(inputDate: Date) {
@@ -92,9 +93,12 @@ const RightSide: FC = () => {
         setModalPopup(prev => !prev)
     }
 
+    const { profile } = useContext(ProfileContext)
+
     return (
         <CustomRightSide
         >
+            {profile}
             <div className='rightside_header' >
                 <button onClick={scrollToCurrentDay} className='current_day'>Current day</button>
             </div>
@@ -122,7 +126,6 @@ const RightSide: FC = () => {
                     </div>)}
             </div>
             {modalPopup && <AddTaskModal close={handlePopup} />}
-
         </CustomRightSide >
     )
 }
