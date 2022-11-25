@@ -1,6 +1,6 @@
 import { createServer, IncomingMessage, ServerResponse } from 'http';
 const path = require('path');
-const { createTable, connectDatabase } = require(path.resolve(
+const { createTables, connectDatabase, dropTables } = require(path.resolve(
   __dirname,
   'models/table'
 ));
@@ -18,19 +18,17 @@ const server = createServer((req: IncomingMessage, res: ServerResponse) => {
   if (req.url === '/api/tasks' && req.method === 'GET') {
     Task.getTasks(req, res);
   } else if (req.url.match(/\/api\/tasks\/\w+/) && req.method === 'GET') {
-    const profile = req.url.split('/')[3];
-    Task.getProfileTasks(req, res, profile);
+    const profileId = req.url.split('/')[3];
+    Task.getProfileTasks(req, res, profileId);
   } else if (req.url === '/api/tasks' && req.method === 'POST') {
     Task.createTask(req, res);
-  }
-  // else if (req.url.match(/\/api\/tasks\/\w+/) && req.method === 'PUT') {
-  //   const id = req.url.split('/')[3];
-  //   updateTask(req, res, id);
-  // } else if (req.url.match(/\/api\/tasks\/\w+/) && req.method === 'DELETE') {
-  //   const id = req.url.split('/')[3];
-  //   deleteTask(req, res, id);
-  // }
-  else {
+  } else if (req.url === '/api/tasks' && req.method === 'DELETE') {
+    Task.removeTask(req, res);
+  } else if (req.url === '/api/profiles' && req.method === 'GET') {
+    Task.getProfiles(req, res);
+  } else if (req.url === '/api/profiles' && req.method === 'POST') {
+    Task.createUser(req, res);
+  } else {
     res.writeHead(404, { 'Content-Type': 'application/json' });
     res.end(
       JSON.stringify({
@@ -41,6 +39,6 @@ const server = createServer((req: IncomingMessage, res: ServerResponse) => {
 });
 
 server.listen(PORT, () => {
-  // connectDatabase();
+  createTables();
   console.log(`Server listening on port ${PORT}`);
 });

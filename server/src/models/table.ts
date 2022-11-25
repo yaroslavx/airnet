@@ -10,17 +10,25 @@ export const connectDatabase = () => {
       if (err) return console.error(err);
     }
   );
+  db.get('PRAGMA foreign_keys = ON');
   return db;
 };
 
-export const createTable = () => {
+export const createTables = () => {
   const db = connectDatabase();
   // Create a table
-  const sql = `CREATE TABLE tasks (
-    id INTEGER PRIMARY KEY,
-    profile TEXT DEFAULT "default_profile" NOT NULL,
-    task TEXT
+  let sql = `CREATE TABLE IF NOT EXISTS profiles(
+    profileId INTEGER PRIMARY KEY,
+    profile TEXT
     );`;
+  db.run(sql);
+  sql = `CREATE TABLE IF NOT EXISTS tasks(
+      taskId INTEGER PRIMARY KEY,
+      task TEXT,
+      task_date TEXT,
+      profileId TEXT, 
+      FOREIGN KEY (profileId) REFERENCES profiles(profileId)
+      );`;
   db.run(sql);
 };
 
@@ -37,7 +45,7 @@ export const findAll = async () => {
 
 export const findByProfile = async (profile) => {
   const db = connectDatabase();
-  const sql = `SELECT * FROM tasks WHERE profile = ?`;
+  const sql = `SELECT * FROM tasks WHERE profileId = ?`;
   return new Promise((resolve, reject) => {
     db.all(sql, [profile], (err, rows) => {
       if (err) reject(err);
@@ -46,42 +54,54 @@ export const findByProfile = async (profile) => {
   });
 };
 
-export const create = async (task, profile = 'default_profile') => {
-  console.log(task, profile);
+export const create = async (task, task_date, profileId) => {
   const db = connectDatabase();
-  const sql = `INSERT INTO tasks(profile, task) VALUES (?,?)`;
-  // return db.all(sql, [profile, task]);
+  const sql = `INSERT INTO tasks(task, task_date, profileId) VALUES (?,?,?)`;
   return new Promise((resolve, reject) => {
-    db.all(sql, [profile, task], (err, row) => {
+    db.all(sql, [task, task_date, profileId], (err, row) => {
       if (err) reject(err);
       resolve(row);
     });
   });
 };
 
+export const remove = async (taskId) => {
+  const db = connectDatabase();
+  const sql = `DELETE FROM tasks WHERE(taskId) VALUES (?)`;
+  return new Promise((resolve, reject) => {
+    db.all(sql, [taskId], (err, row) => {
+      if (err) reject(err);
+      resolve(row);
+    });
+  });
+};
+
+export const createProfile = async (profile) => {
+  const db = connectDatabase();
+  const sql = `INSERT INTO profiles(profile) VALUES (?)`;
+  return new Promise((resolve, reject) => {
+    db.all(sql, [profile], (err, row) => {
+      if (err) reject(err);
+      resolve(row);
+    });
+  });
+};
+
+export const findAllProfiles = async () => {
+  const db = connectDatabase();
+  const sql = `SELECT * FROM profiles`;
+  return new Promise((resolve, reject) => {
+    db.all(sql, (err, rows) => {
+      if (err) reject(err);
+      console.log(rows);
+      resolve(rows);
+    });
+  });
+};
+
 // Drop a table
-// db.run('DROP TABLE users');
-
-// Insert data into database
-// sql = `INSERT INTO users(first_name,last_name,username,password,email) VALUES (?,?,?,?,?)`;
-// db.run(
-//   sql,
-//   ['second', 'third', 'last', 'first', 'another_mail@mail.com'],
-//   (err) => {
-//     if (err) return console.error(err.message);
-//   }
-// );
-
-// // Updata data
-// sql = `UPDATE users SET first_name = ? WHERE id = ?`;
-// db.run(sql, ['newRandomName', 1], (err) => {
-//   if (err) return console.error(err.message);
-// });
-
-// Delete data
-// sql = `DELETE FROM users WHERE id = ?`;
-// db.run(sql, [1], (err) => {
-//   if (err) return console.error(err.message);
-// });
-
-// Query the data
+export const dropTables = () => {
+  const db = connectDatabase();
+  db.run('DROP TABLE IF EXISTS tasks');
+  db.run('DROP TABLE IF EXISTS profiles');
+};

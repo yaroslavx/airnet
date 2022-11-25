@@ -8,7 +8,15 @@ const CalendarPage: FC = () => {
         <CustomCalendarPage>
             <div className='header'>
                 <span className='title'>
-                    {`[Today's month Today's date]`}
+                    <span className='weekday'></span>{(new Date).toLocaleString("default", { weekday: "long" })}
+                    {' '}
+                    <span className='date'>
+                        {(new Date).getDate()}
+                        {' '}
+                        {(new Date).toLocaleString("default", { month: "short" })}
+                        {' '}
+                        {(new Date).getFullYear()}
+                    </span>
                 </span>
                 <div>
                     <ExportButton />

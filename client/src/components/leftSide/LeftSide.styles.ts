@@ -5,10 +5,8 @@ type LeftSide = {
 }
 
 export const CustomLeftSide = styled.div<LeftSide>`
-  /* flex: 4; */
   position: relative;
   border-right: 1px solid rgba(38, 40, 66, 0.12);
-  /* max-width: fit-content; */
   min-width: 170px;
   max-width: 80vw;
   width: ${(props) => `${props.width}px`};
@@ -79,7 +77,28 @@ export const CustomLeftSide = styled.div<LeftSide>`
       cursor: pointer;
     }
   }
-  .tasks {
+
+  .profiles {
     overflow: hidden;
+
+    .profile_container {
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid rgba(38, 40, 66, 0.12);
+      height: 40px;
+      padding-left: 25px;
+
+      .profile {
+        font-style: normal;
+        font-weight: 500;
+        font-size: 15px;
+        line-height: 18px;
+        color: #6d6e85;
+      }
+    }
+
+    .selected {
+      background-color: #eee;
+    }
   }
 `

@@ -1,19 +1,18 @@
-import React, { FC, useContext, useEffect, useRef, useState } from 'react'
+import { Dispatch, FC, SetStateAction, useContext, useEffect, useRef, useState } from 'react'
 import { CustomAddTaskModal } from './AddTaskModal.styles'
 import { IoAddCircle } from 'react-icons/io5'
-import { BsFileEarmarkFill } from 'react-icons/bs'
-
-import { MdOutlineAttachFile } from 'react-icons/md'
 import { GoFileDirectory } from 'react-icons/go'
 import { ProfileContext } from '../calendar/Calendar'
-import axios from 'axios'
+import { TaskType } from '../rightSide/RightSide'
 
 
 type ModalProps = {
+    taskDate?: string
+    setTasks: Dispatch<SetStateAction<TaskType[] | undefined>>
     close: () => void
 }
 
-const AddTaskModal: FC<ModalProps> = ({ close }) => {
+const AddTaskModal: FC<ModalProps> = ({ taskDate, setTasks, close }) => {
     const textareaRef = useRef<HTMLTextAreaElement>(null)
     const [task, setTask] = useState<string>()
 
@@ -21,7 +20,7 @@ const AddTaskModal: FC<ModalProps> = ({ close }) => {
         textareaRef.current?.focus()
     }, [])
 
-    const { profile } = useContext(ProfileContext)
+    const { profileId } = useContext(ProfileContext)
 
     const headers = {
         'Content-Type': 'application/json',
@@ -38,12 +37,17 @@ const AddTaskModal: FC<ModalProps> = ({ close }) => {
                 headers: headers,
                 body: JSON.stringify({
                     "task": task,
-                    "profile": profile
+                    "task_date": taskDate,
+                    "profileId": profileId
                 })
+
             }
         )
+        const responce = await fetch(`http://localhost:5000/api/tasks/${profileId}`)
+        const profileTasksFromApi = await responce.json()
+        setTasks(profileTasksFromApi)
+        close()
     }
-
 
     return (
         <CustomAddTaskModal onClick={close}>
@@ -52,7 +56,6 @@ const AddTaskModal: FC<ModalProps> = ({ close }) => {
                 <div className='buttons'>
                     <button onClick={addTask} className='add_task'><IoAddCircle />Add task</button>
                     <button className='upload_file'><GoFileDirectory />Upload file</button>
-                    {/* <div className='uploaded_file'></div> */}
                 </div>
             </div>
         </CustomAddTaskModal>

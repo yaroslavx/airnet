@@ -4,22 +4,22 @@ import RightSide from '../rightSide/RightSide'
 import { CustomCalendar } from './Calendar.styles'
 
 type ContextType = {
-    profile: string | null,
-    setProfile: Dispatch<SetStateAction<string>>
+    profileId: number | null,
+    setProfile: Dispatch<SetStateAction<number>>
 }
 
 const initialState = {
-    profile: 'default_profile',
+    profileId: 1,
     setProfile: () => { }
 }
 
 export const ProfileContext = createContext<ContextType>(initialState);
 
 const Calendar: FC = () => {
-    const [profile, setProfile] = useState(initialState.profile);
+    const [profileId, setProfile] = useState(initialState.profileId);
     return (
         <CustomCalendar>
-            <ProfileContext.Provider value={{ profile, setProfile }} >
+            <ProfileContext.Provider value={{ profileId, setProfile }} >
                 <LeftSide />
                 <RightSide />
             </ProfileContext.Provider>

@@ -1,4 +1,11 @@
-import { findAll, create, findByProfile } from '../models/table';
+import {
+  findAll,
+  create,
+  findByProfile,
+  findAllProfiles,
+  createProfile,
+  remove,
+} from '../models/table';
 
 const { getPostData } = require('../utils/utils');
 const headers = {
@@ -25,9 +32,9 @@ async function getTasks(req, res) {
 
 // @desc    Gets Profile Tasks
 // @route   GET /api/tasks/:profile
-async function getProfileTasks(req, res, profile) {
+async function getProfileTasks(req, res, profileId) {
   try {
-    const tasks = await findByProfile(profile);
+    const tasks = await findByProfile(profileId);
 
     if (!tasks) {
       res.writeHead(404, headers);
@@ -41,31 +48,13 @@ async function getProfileTasks(req, res, profile) {
   }
 }
 
-// @desc    Gets Single Product
-// @route   GET /api/product/:id
-// async function getProduct(req, res, id) {
-//   try {
-//     const product = await Product.findById(id);
-
-//     if (!product) {
-//       res.writeHead(404, headers);
-//       res.end(JSON.stringify({ message: 'Product Not Found' }));
-//     } else {
-//       res.writeHead(200, headers);
-//       res.end(JSON.stringify(product));
-//     }
-//   } catch (error) {
-//     console.log(error);
-//   }
-// }
-
-// @desc    Create a Product
+// @desc    Create a Task
 // @route   POST /api/tasks
 async function createTask(req, res) {
   try {
     const body = await getPostData(req);
-    const { task, profile } = JSON.parse(body as string);
-    const createdTask = await create(task, profile);
+    const { task, task_date, profileId } = JSON.parse(body as string);
+    const createdTask = await create(task, task_date, profileId);
     res.writeHead(201, headers);
     return res.end(JSON.stringify(createdTask));
   } catch (error) {
@@ -73,57 +62,51 @@ async function createTask(req, res) {
   }
 }
 
-// @desc    Update a Product
-// @route   PUT /api/products/:id
-// async function updateProduct(req, res, id) {
-//   try {
-//     const product = await Product.findById(id);
+// @desc    Delete a Task
+// @route   DELETE /api/tasks
+async function removeTask(req, res) {
+  try {
+    const body = await getPostData(req);
+    const { taskId } = JSON.parse(body as string);
+    const deletedTask = await remove(taskId);
+    res.writeHead(201, headers);
+    return res.end(JSON.stringify(deletedTask));
+  } catch (error) {
+    console.log(error);
+  }
+}
 
-//     if (!product) {
-//       res.writeHead(404, { 'Content-Type': 'application/json' });
-//       res.end(JSON.stringify({ message: 'Product Not Found' }));
-//     } else {
-//       const body = await getPostData(req);
+// @desc    Gets All Profiles
+// @route   GET /api/profiles
+async function getProfiles(req, res) {
+  try {
+    const profiles = await findAllProfiles();
+    res.writeHead(200, headers);
+    res.end(JSON.stringify(profiles));
+  } catch (error) {
+    console.log(error);
+  }
+}
 
-//       const { name, description, price } = JSON.parse(body);
-
-//       const productData = {
-//         name: name || product.name,
-//         description: description || product.description,
-//         price: price || product.price,
-//       };
-
-//       const updProduct = await Product.update(id, productData);
-
-//       res.writeHead(200, { 'Content-Type': 'application/json' });
-//       return res.end(JSON.stringify(updProduct));
-//     }
-//   } catch (error) {
-//     console.log(error);
-//   }
-// }
-
-// @desc    Delete Product
-// @route   DELETE /api/product/:id
-// async function deleteProduct(req, res, id) {
-//   try {
-//     const product = await Product.findById(id);
-
-//     if (!product) {
-//       res.writeHead(404, { 'Content-Type': 'application/json' });
-//       res.end(JSON.stringify({ message: 'Product Not Found' }));
-//     } else {
-//       await Product.remove(id);
-//       res.writeHead(200, { 'Content-Type': 'application/json' });
-//       res.end(JSON.stringify({ message: `Product ${id} removed` }));
-//     }
-//   } catch (error) {
-//     console.log(error);
-//   }
-// }
+// @desc    Create a Profile
+// @route   POST /api/profiles
+async function createUser(req, res) {
+  try {
+    const body = await getPostData(req);
+    const { profile } = JSON.parse(body as string);
+    const createdProfile = await createProfile(profile);
+    res.writeHead(201, headers);
+    return res.end(JSON.stringify(createdProfile));
+  } catch (error) {
+    console.log(error);
+  }
+}
 
 module.exports = {
   getTasks,
   getProfileTasks,
   createTask,
+  removeTask,
+  getProfiles,
+  createUser,
 };

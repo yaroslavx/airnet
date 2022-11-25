@@ -1,11 +1,13 @@
 import { FC, useContext, useEffect, useState } from 'react'
 import { CustomLeftSide } from './LeftSide.styles'
-import Task from '../day/Day'
 import { IoAddCircle } from 'react-icons/io5'
-import axios from 'axios'
 import { ProfileContext } from '../calendar/Calendar'
+import AddProfileModal from '../addProfileModal/AddProfileModal'
 
-
+export type ProfileType = {
+    profileId: number,
+    profile: string
+}
 
 const LeftSide: FC = () => {
     const [size, setSize] = useState({ x: 370 });
@@ -28,14 +30,36 @@ const LeftSide: FC = () => {
         document.body.addEventListener("mouseup", onMouseUp, { once: true });
     };
 
-    const [profiles, setProfiles] = useState<string[]>([])
+    const [profiles, setProfiles] = useState<ProfileType[]>()
+    const [profileTitle, setProfileTitle] = useState<string>()
 
-    const createProfile = () => {
-        setProfiles(prev => [...prev, 'new_profile'])
+    const headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Origin': 'http://localhost:8080'
     }
 
-    const { profile, setProfile } = useContext(ProfileContext);
+    const { profileId, setProfile } = useContext(ProfileContext);
 
+    useEffect(() => {
+        const fetchProfiles = async () => {
+
+            const responce = await fetch('http://localhost:5000/api/profiles')
+            const profilesFromApi = await responce.json()
+
+            setProfiles(profilesFromApi)
+
+        }
+        fetchProfiles()
+    }, [])
+
+    const [modalPopup, setModalPopup] = useState(false)
+
+    const handlePopup = () => {
+        setModalPopup(prev => !prev)
+    }
+
+    console.log(profiles)
     return (
         <CustomLeftSide width={size.x}>
             <button className='resize' onMouseDown={handler}><div className='handle'></div></button>
@@ -43,14 +67,20 @@ const LeftSide: FC = () => {
                 Profiles
             </div>
             <div className='add_bar'>
-                <div className='add_button' onClick={createProfile}><IoAddCircle />Add Profile</div>
-
+                <div onClick={handlePopup} className='add_button'><IoAddCircle />Add Profile</div>
             </div>
 
             <div className='profiles'>
-                {profiles.map(profile => <div onClick={() => setProfile(profile)} className='profile'>{profile}</div>)}
+                {profiles && profiles.map(profile =>
+                    <div onClick={() => setProfile(profile.profileId)} className={`${profile.profileId === profileId ? 'selected profile_container' : 'profile_container'}`}>
+                        <div
+                            className='profile'>
+                            {profile.profile}
+                        </div>
+                    </div>)}
 
             </div>
+            {modalPopup && <AddProfileModal close={handlePopup} setProfiles={setProfiles} />}
         </CustomLeftSide>
     )
 }

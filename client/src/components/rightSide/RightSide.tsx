@@ -1,8 +1,16 @@
-import { FC, RefObject, useContext, useEffect, useRef, useState } from 'react'
+import { FC, useContext, useEffect, useRef, useState } from 'react'
 import { CustomRightSide } from './RightSide.styles'
 import { IoAddCircleOutline } from 'react-icons/io5'
 import AddTaskModal from '../addTaskModal/AddTaskModal';
 import { ProfileContext } from '../calendar/Calendar';
+import TasksModal from '../tasksModal/TasksModal';
+
+export type TaskType = {
+    taskId: number,
+    task: string,
+    task_date: string,
+    profileId: string
+}
 
 const RightSide: FC = () => {
     function formatDates(inputDate: Date) {
@@ -88,17 +96,37 @@ const RightSide: FC = () => {
     const parentRef = useRef<HTMLDivElement>(null);
 
     const [modalPopup, setModalPopup] = useState(false)
+    const [tasksPopup, setTasksPopup] = useState(false)
+    const [openedTaskDate, setOpenedTaskDate] = useState<string>()
 
     const handlePopup = () => {
         setModalPopup(prev => !prev)
     }
 
-    const { profile } = useContext(ProfileContext)
+    const handleTasksPopup = () => {
+        setTasksPopup(prev => !prev)
+    }
+
+    const { profileId } = useContext(ProfileContext)
+
+    const [tasks, setTasks] = useState<TaskType[]>()
+
+    useEffect(() => {
+        const fetchProfileTasks = async () => {
+            const responce = await fetch(`http://localhost:5000/api/tasks/${profileId}`)
+            const profileTasksFromApi = await responce.json()
+            setTasks(profileTasksFromApi)
+
+        }
+        fetchProfileTasks()
+    }, [profileId])
+
+
+    console.log(tasks ? tasks.find(task => task.task_date === '2022-12-03')?.task : '')
 
     return (
         <CustomRightSide
         >
-            {profile}
             <div className='rightside_header' >
                 <button onClick={scrollToCurrentDay} className='current_day'>Current day</button>
             </div>
@@ -121,11 +149,15 @@ const RightSide: FC = () => {
                                 </div>
                                 <div>{day.date.toLocaleDateString("default", { month: "short" })}</div>
                             </div>
-                            <button onClick={handlePopup} className='add_task'><IoAddCircleOutline /></button>
+                            <div onClick={() => { handleTasksPopup(), setOpenedTaskDate(day.actualDate) }} className='tasks'>
+                                {tasks ? tasks.filter(task => task.task_date === day.actualDate).map(task => <div className='task'>{task.task}</div>) : ''}
+                            </div>
+                            <button onClick={() => { handlePopup(), setOpenedTaskDate(day.actualDate) }} className='add_task'><IoAddCircleOutline /></button>
                         </div>
                     </div>)}
             </div>
-            {modalPopup && <AddTaskModal close={handlePopup} />}
+            {tasksPopup && <TasksModal setTasks={setTasks} tasks={tasks} close={handleTasksPopup} taskDate={openedTaskDate} />}
+            {modalPopup && <AddTaskModal setTasks={setTasks} close={handlePopup} taskDate={openedTaskDate} />}
         </CustomRightSide >
     )
 }

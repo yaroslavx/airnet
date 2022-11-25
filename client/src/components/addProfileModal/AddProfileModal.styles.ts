@@ -1,8 +1,8 @@
 import styled from 'styled-components'
 
-export const CustomAddTaskModal = styled.div`
+export const CustomAddProfileModal = styled.div`
   position: absolute;
-  padding: 10%;
+  padding: 10% 20%;
   top: -77px;
   left: -25px;
   width: 100vw;
@@ -11,16 +11,15 @@ export const CustomAddTaskModal = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
 
   .modal {
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 30px;
-    width: 500px;
+    width: 200px;
+    height: fit-content;
     min-width: 500px;
-    min-height: 300px;
     background-color: #fff;
     border-radius: 10px;
     justify-content: space-between;
@@ -29,7 +28,6 @@ export const CustomAddTaskModal = styled.div`
 
     .textarea {
       width: 100%;
-      height: 100%;
       border: 1px solid rgba(38, 40, 66, 0.12);
       border-radius: 10px;
       outline: none;

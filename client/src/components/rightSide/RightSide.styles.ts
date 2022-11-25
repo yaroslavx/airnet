@@ -61,11 +61,11 @@ export const CustomRightSide = styled.div`
 
       .day {
         position: relative;
-        background-color: aliceblue;
         width: 100%;
         height: 100%;
         background-color: #fafafa;
         border-radius: 9px;
+        padding: 55px 40px 7px 7px;
 
         .date {
           display: flex;
@@ -108,6 +108,29 @@ export const CustomRightSide = styled.div`
             color: #000;
             background-color: transparent;
             cursor: pointer;
+          }
+        }
+
+        .tasks {
+          display: flex;
+          flex-direction: column;
+          gap: 5px;
+          height: 100%;
+          width: 100%;
+          overflow: auto;
+          z-index: 100;
+          border-radius: 5px;
+
+          .task {
+            background-color: lightblue;
+            border-radius: 5px;
+            padding-left: 5px;
+            padding-right: 5px;
+            /* width: 50px; */
+            min-height: 20px;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
           }
         }
       }
